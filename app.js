@@ -1,14 +1,20 @@
-const http = require('http');
+const { response } = require('express');
+const request = require('request');
 
-const hostname = '127.0.0.1';
-const port = 3000;
+const TYPE_ENDPOINT = 'https://pokeapi.co/api/v2/type/'
+const HABITAT_ENDPOINT = 'https://pokeapi.co/api/v2/pokemon-habitat/'
 
-const server = http.createServer((req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Hello World');
-});
+const TEST_TYPE = 'flying'
+const TEST_HABITAT = 'cave'
 
-server.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
-});
+request(TYPE_ENDPOINT + TEST_TYPE + '/', function (error, response, body) {
+    if (!error && response.statusCode == 200){
+        console.log(JSON.parse(body))
+    }
+})
+
+request(HABITAT_ENDPOINT + TEST_HABITAT + '/', function (error, response, body) {
+    if (!error && response.statusCode == 200){
+        console.log(JSON.parse(body))
+    }
+})
