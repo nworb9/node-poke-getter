@@ -1,19 +1,20 @@
-const { response } = require('express');
-const request = require('request');
+import request from 'request';
 
-const TYPE_ENDPOINT = 'https://pokeapi.co/api/v2/type/'
-const HABITAT_ENDPOINT = 'https://pokeapi.co/api/v2/pokemon-habitat/'
+const typeEndpoint = 'https://pokeapi.co/api/v2/type/'
+const habitatEndpoint = 'https://pokeapi.co/api/v2/pokemon-habitat/'
 
 const TEST_TYPE = 'flying'
 const TEST_HABITAT = 'cave'
 
-request(TYPE_ENDPOINT + TEST_TYPE + '/', function (error, response, body) {
+// based on this tutorial https://www.vikingcodeschool.com/professional-development-with-javascript/writing-the-api-wrapper
+
+request(typeEndpoint + TEST_TYPE + '/', function (error, response, body) {
     if (!error && response.statusCode == 200){
         console.log(JSON.parse(body))
     }
 })
 
-request(HABITAT_ENDPOINT + TEST_HABITAT + '/', function (error, response, body) {
+request(habitatEndpoint + TEST_HABITAT + '/', function (error, response, body) {
     if (!error && response.statusCode == 200){
         console.log(JSON.parse(body))
     }
