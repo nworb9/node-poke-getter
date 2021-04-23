@@ -7,21 +7,25 @@ class PokemonCatcher {
     constructor(habitat, type) {
         this.habitat = habitat;
         this.type = type;
+        this.type_pokemon = [];
+        this.habitat_pokemon = [];
     }
 
-    getPokemonByType(callback) {
-        return this._sendRequest(typeEndpoint, this.type, callback);
-
+    getPokemonByType() {
+        this.type_pokemon = await this._sendRequest(typeEndpoint, this.type);
+        return this.type_pokemon;
     }
 
-    getPokemonByHabitat(callback) {
-        return this._sendRequest(habitatEndpoint, this.habitat, callback);
+    getPokemonByHabitat() {
+        this.habitat_pokemon = await this._sendRequest(habitatEndpoint, this.habitat);
+        return this.habitat_pokemon;
     }
 
-    _sendRequest(endpoint, filter, callback) {
+    _sendRequest(endpoint, filter) {
         const url = endpoint + filter + '/';
         const getJSON = bent('json');
-        getJSON(url);
+        let pokemon = await getJSON(url);
+        return pokemon;
     }
 }   
 
