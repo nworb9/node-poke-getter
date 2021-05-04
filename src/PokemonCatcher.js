@@ -11,21 +11,20 @@ class PokemonCatcher {
         this.habitat_pokemon = [];
     }
 
-    getPokemonByType() {
-        this.type_pokemon = await this._sendRequest(typeEndpoint, this.type);
-        return this.type_pokemon;
+    async getPokemonByType() { // where to put async and where is it redundant?
+        let response = await this._sendRequest(typeEndpoint, this.type);
+        return response;
     }
 
-    getPokemonByHabitat() {
-        this.habitat_pokemon = await this._sendRequest(habitatEndpoint, this.habitat);
-        return this.habitat_pokemon;
+    async getPokemonByHabitat() {
+        let response = await this._sendRequest(habitatEndpoint, this.habitat);
+        return response;
     }
 
-    _sendRequest(endpoint, filter) {
+    async _sendRequest(endpoint, filter) {
         const url = endpoint + filter + '/';
         const getJSON = bent('json');
-        let pokemon = await getJSON(url);
-        return pokemon;
+        return getJSON(url);
     }
 }   
 
