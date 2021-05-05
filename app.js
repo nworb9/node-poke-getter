@@ -7,6 +7,6 @@ const TEST_HABITAT = 'cave';
 
 const pokecatcher = new PokemonCatcher(TEST_HABITAT, TEST_TYPE);
 
-const pokemon = pokecatcher.getPokemonByType();
+await pokecatcher.init();
 
-console.log('app.js', pokemon);
+console.log(pokecatcher.habitat_pokemon);
