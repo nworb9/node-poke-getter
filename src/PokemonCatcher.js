@@ -25,12 +25,14 @@ class PokemonCatcher {
         if (!fs.existsSync(MEDIA_DIR)){
             fs.mkdirSync(MEDIA_DIR);
         }
+        // I am not awaiting properly and type/habitat pokemon lists are undefined when _filterPokemon() is hit
         this.type_pokemon = await this._getPokemonByType();
         this.habitat_pokemon = await this._getPokemonByHabitat();
         this.pokemon = await this._filterPokemon();
     }
 
     async getSprite(endpoint){
+        // https://www.kindacode.com/article/using-axios-to-download-images-and-videos-in-node-js/
         try {
             const response = await axios({
                 method: "GET",
@@ -46,7 +48,7 @@ class PokemonCatcher {
     async _filterPokemon() {
         const final_pokemon = [];
         if (this.type_pokemon.length & this.habitat_pokemon.length) {
-            console.log("both exist")
+            // debugger;
             final_pokemon = this.type_pokemon.filter(element => this.habitat_pokemon.includes(element));
             console.log(final_pokemon)
         }
