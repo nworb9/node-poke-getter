@@ -12,26 +12,40 @@ class PokemonCatcher {
     constructor(habitat, type) {
         this.habitat = habitat;
         this.type = type;
-        this.type_pokemon = [];
-        this.habitat_pokemon = [];
-        this.pokemon = [];
     }
 
     async init () {
-        await this.config().catch();
-    }
-
-    async config() { 
         if (!fs.existsSync(MEDIA_DIR)){
             fs.mkdirSync(MEDIA_DIR);
         }
-        // I am not awaiting properly and type/habitat pokemon lists are undefined when _filterPokemon() is hit
-        this.type_pokemon = await this._getPokemonByType();
-        this.habitat_pokemon = await this._getPokemonByHabitat();
-        this.pokemon = await this._filterPokemon();
+        await this.config();
+        return 1;
     }
 
-    async getSprite(endpoint){
+    async config() { 
+        const getPokemon = async() => {
+            const type_pokemon = await this._getPokemonByType();
+            const habitat_pokemon = await this._getPokemonByHabitat();
+            const filtered_pokemon = await this._filterPokemon(habitat_pokemon, type_pokemon);
+            console.log("filtered pokemon", filtered_pokemon)
+            // const sprites = Promise.all(  // getting a list of promises (the downloading sprites)
+            //     final_pokemon.map(async (pokemon) => {
+            //         const sprite = this._getSprite(pokemon.endpoint);
+            //         return sprite
+            //     })
+            // )
+            const final_pokemon = filtered_pokemon.reduce((list, pokemon) => {
+                console.log('list', list)
+                console.log('pokemon', pokemon)
+            }, [])
+            return final_pokemon
+            
+        }
+        const pokemon = await getPokemon()
+        return pokemon
+    }
+
+    async _getSprite(endpoint){
         // https://www.kindacode.com/article/using-axios-to-download-images-and-videos-in-node-js/
         try {
             const response = await axios({
@@ -45,27 +59,16 @@ class PokemonCatcher {
         }
     }
 
-    async _filterPokemon() {
-        const final_pokemon = [];
-        if (this.type_pokemon.length & this.habitat_pokemon.length) {
-            // debugger;
-            final_pokemon = this.type_pokemon.filter(element => this.habitat_pokemon.includes(element));
-            console.log(final_pokemon)
+    async _filterPokemon(habitat_pokemon, type_pokemon) {
+        if (type_pokemon.length & habitat_pokemon.length) {
+            return type_pokemon.filter(element => habitat_pokemon.includes(element));
         }
-        else if (this.habitat_pokemon != []) {
-            final_pokemon = this.habitat_pokemon;
+        else if (habitat_pokemon != []) {
+            return habitat_pokemon;
         }
-        else if (this.type_pokemon != []) {
-            final_pokemon = this.type_pokemon;
+        else if (type_pokemon != []) {
+            return type_pokemon;
         }
-        for (var i = 0; i < final_pokemon.length; i++) { // still need to replace w/ functional equivalent
-            var new_pokemon = {
-                'name': final_pokemon[i]['name'],
-                'sprite': this._getSprite(final_pokemon[i]['endpoint'])
-            };
-            result.push(new_pokemon);
-        }
-        return final_pokemon;
     }
 
     async _getPokemonByType() {
