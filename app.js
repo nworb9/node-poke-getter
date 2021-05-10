@@ -67,13 +67,10 @@ function filterPokemon(type_pokemon, habitat_pokemon) {
 async function formatPokemon(pokemon_list) {
     // they recommended using normal for loop -> https://stackoverflow.com/questions/37576685/using-async-await-with-a-foreach-loop/37576787#37576787
     const finalPokemon = [];
-    for (poke in pokemon_list) {
-        console.log(poke);
-        const spritePath = await getSprite(poke['endpoint']).catch(e => { console.log(e) })
-        console.log(spritePath)
+    for (i = 0; i < pokemon_list.length; i++) {
         finalPokemon.push({
-            'name': poke['name'],
-            'sprite': spritePath
+            'name': pokemon_list[i]['name'],
+            'sprite': await getSprite(pokemon_list[i]['endpoint']).catch(e => { console.log(e) })
         });
     }
     return finalPokemon
@@ -98,7 +95,3 @@ async function getPokemon(type, habitat) {
 // add handling for when there isn't a type/habitat specified
 
 getPokemon(TEST_TYPE, TEST_HABITAT)
-
-
-
-
