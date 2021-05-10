@@ -48,7 +48,7 @@ async function getSprite(pokemon){
 
 async function getTypePokemon(type) {
     const typeResponse = await requestPokemon(TYPE_ENDPOINT, type).catch(e => { console.log(e) });
-    const typePokemon = typeResponse.pokemon; // this one is nested one more level
+    const typePokemon = typeResponse.pokemon; 
     return typePokemon.map((pokemon) => (
         {
             'name': pokemon['pokemon']['name'],
@@ -70,15 +70,13 @@ async function getHabitatPokemon(habitat) {
 
 
 function filterPokemon(type_pokemon, habitat_pokemon) {
-    // https://stackoverflow.com/questions/53603040/filter-array-of-objects-by-another-array-of-objects
-    // why doesn't this work?  --> final_pokemon = type_pokemon.filter(element => habitat_pokemon.includes(element));
     return type_pokemon.filter((pokemon) => habitat_pokemon.find(({ name }) => pokemon.name === name));
 }
 
 async function formatPokemon(pokemon_list) {
     // they recommended using normal for loop -> https://stackoverflow.com/questions/37576685/using-async-await-with-a-foreach-loop/37576787#37576787
     const finalPokemon = [];
-    for (i = 0; i < pokemon_list.length; i++) {
+    for (i = 0; i < pokemon_list.length; i++) { // use Promise.all() here to reduce for loop stuff
         finalPokemon.push({
             'name': pokemon_list[i]['name'],
             'sprite': await getSprite(pokemon_list[i]).catch(e => { console.log(e) })
