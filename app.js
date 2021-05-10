@@ -25,13 +25,24 @@ async function requestPokemon(endpoint, filter) { // at what point does it make 
     }   
 }
 
-async function getSprite(endpoint){
+async function getSprite(pokemon){
     // https://www.kindacode.com/article/using-axios-to-download-images-and-videos-in-node-js/
     try {
-        const response = await axios.get(endpoint);
-        return response.data.sprites.front_default;
+        const spritePathLocal = MEDIA_DIR + '/' + pokemon['name'] + '.png';
+        const response = await axios.get(pokemon['endpoint']);
+        const spritePathRemote = response.data.sprites.front_default;
+        const imageResponse = await axios({
+            method: 'GET',
+            url: spritePathRemote,
+            responseType: 'stream',
+        });
+        const write = imageResponse.data.pipe(fs.createWriteStream(spritePathLocal));
+        write.on('finish', () => {
+            console.log('downloaded file!')
+        });
+        return spritePathLocal;
     } catch (err) {
-        throw 'API call unsuccessful -- confirm valid endpoint and filters!'
+        throw 'Sprite download unsuccessful!'
     }
 }
 
@@ -70,7 +81,7 @@ async function formatPokemon(pokemon_list) {
     for (i = 0; i < pokemon_list.length; i++) {
         finalPokemon.push({
             'name': pokemon_list[i]['name'],
-            'sprite': await getSprite(pokemon_list[i]['endpoint']).catch(e => { console.log(e) })
+            'sprite': await getSprite(pokemon_list[i]).catch(e => { console.log(e) })
         });
     }
     return finalPokemon
@@ -80,7 +91,7 @@ async function getPokemon(type, habitat) {
     const typePokemon = await getTypePokemon(type);
     const habitatPokemon = await getHabitatPokemon(habitat);
     const pokemonList = filterPokemon(typePokemon, habitatPokemon);
-    // const pokemon = pokemonList.reduce((pokemon) => {
+    // const pokemon = pokemonList.reduce((pokemon) => {   // this wasn't working with await!
     //     console.log(pokemon);
     //     const spritePath = await getSprite(pokemon['endpoint']).catch(e => { console.log(e) })
     //     return {
