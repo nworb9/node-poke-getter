@@ -15,7 +15,7 @@ if (!fs.existsSync(MEDIA_DIR)){
     fs.mkdirSync(MEDIA_DIR);
 }
 
-async function sendRequest(endpoint, filter) { // at what point does it make sense to name a specific function call ?
+async function requestPokemon(endpoint, filter) { // at what point does it make sense to name a specific function call ?
     try {
         const url = endpoint + filter + '/';
         const response = await axios.get(url);
@@ -25,8 +25,20 @@ async function sendRequest(endpoint, filter) { // at what point does it make sen
     }   
 }
 
+async function getSprite(endpoint){
+    // https://www.kindacode.com/article/using-axios-to-download-images-and-videos-in-node-js/
+    try {
+        const response = await axios.get(endpoint);
+        const spritePath = response.data.sprites.front_default;
+        console.log(spritePath);
+        return spritePath;
+    } catch (err) {
+        throw 'API call unsuccessful -- confirm valid endpoint and filters!'
+    }
+}
+
 async function getTypePokemon(type) {
-    const typeResponse = await sendRequest(TYPE_ENDPOINT, type);
+    const typeResponse = await requestPokemon(TYPE_ENDPOINT, type).catch(e => { console.log(e) });
     const typePokemon = typeResponse.pokemon; // this one is nested one more level
     return typePokemon.map((pokemon) => {
         return {
@@ -37,7 +49,7 @@ async function getTypePokemon(type) {
 }
 
 async function getHabitatPokemon(habitat) {
-    const habitatResponse = await sendRequest(HABITAT_ENDPOINT, habitat);
+    const habitatResponse = await requestPokemon(HABITAT_ENDPOINT, habitat).catch(e => { console.log(e) });
     const habitatPokemon = habitatResponse.pokemon_species;
     return habitatPokemon.map((pokemon) => {
         return {
@@ -50,28 +62,21 @@ async function getHabitatPokemon(habitat) {
 
 function filterPokemon(type_pokemon, habitat_pokemon) {
     // https://stackoverflow.com/questions/53603040/filter-array-of-objects-by-another-array-of-objects
+    // why doesn't this work?  --> final_pokemon = this.type_pokemon.filter(element => this.habitat_pokemon.includes(element));
     return type_pokemon.filter((pokemon) => habitat_pokemon.find(({ name }) => pokemon.name === name));
-}
-
-async function getSprite(endpoint){
-    // https://www.kindacode.com/article/using-axios-to-download-images-and-videos-in-node-js/
-    try {
-        const response = await axios({
-            method: "GET",
-            url: endpoint,
-            responseType: "stream",
-        });
-        console.log(response)
-    } catch (err) {
-        throw 'API call unsuccessful -- confirm valid endpoint and filters!'
-    }
 }
 
 async function getPokemon(type, habitat) {
     const typePokemon = await getTypePokemon(type);
     const habitatPokemon = await getHabitatPokemon(habitat);
-    const pokemon = filterPokemon(typePokemon, habitatPokemon);
-    console.log(pokemon);
+    const pokemonList = filterPokemon(typePokemon, habitatPokemon);
+    const pokemon = pokemonList.reduce((pokemon) => {
+        console.log(pokemon);
+        return {
+            'name': pokemon['name'],
+            'sprite': getSprite(pokemon['endpoint']).catch(e => { console.log(e) })
+        };
+    })
 }
 
 // add handling for when there isn't a type/habitat specified
