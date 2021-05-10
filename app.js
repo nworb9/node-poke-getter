@@ -47,7 +47,37 @@ async function getHabitatPokemon(habitat) {
     })
 }
 
-// const typePokemon = getTypePokemon(TEST_TYPE).then(console.log);
-const habitatPokemon = getHabitatPokemon(TEST_HABITAT).then(console.log);
+
+function filterPokemon(type_pokemon, habitat_pokemon) {
+    // https://stackoverflow.com/questions/53603040/filter-array-of-objects-by-another-array-of-objects
+    return type_pokemon.filter((pokemon) => habitat_pokemon.find(({ name }) => pokemon.name === name));
+}
+
+async function getSprite(endpoint){
+    // https://www.kindacode.com/article/using-axios-to-download-images-and-videos-in-node-js/
+    try {
+        const response = await axios({
+            method: "GET",
+            url: endpoint,
+            responseType: "stream",
+        });
+        console.log(response)
+    } catch (err) {
+        throw 'API call unsuccessful -- confirm valid endpoint and filters!'
+    }
+}
+
+async function getPokemon(type, habitat) {
+    const typePokemon = await getTypePokemon(type);
+    const habitatPokemon = await getHabitatPokemon(habitat);
+    const pokemon = filterPokemon(typePokemon, habitatPokemon);
+    console.log(pokemon);
+}
+
+// add handling for when there isn't a type/habitat specified
+
+getPokemon(TEST_TYPE, TEST_HABITAT)
+
+
 
 
