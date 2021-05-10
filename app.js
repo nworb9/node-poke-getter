@@ -15,7 +15,7 @@ if (!fs.existsSync(MEDIA_DIR)){
     fs.mkdirSync(MEDIA_DIR);
 }
 
-async function requestPokemon(endpoint, filter) { // at what point does it make sense to name a specific function call ?
+async function requestPokemon(endpoint, filter) {
     try {
         const url = endpoint + filter + '/';
         const response = await axios.get(url);
@@ -49,29 +49,29 @@ async function getSprite(pokemon){
 async function getTypePokemon(type) {
     const typeResponse = await requestPokemon(TYPE_ENDPOINT, type).catch(e => { console.log(e) });
     const typePokemon = typeResponse.pokemon; // this one is nested one more level
-    return typePokemon.map((pokemon) => {
-        return {
+    return typePokemon.map((pokemon) => (
+        {
             'name': pokemon['pokemon']['name'],
             'endpoint': pokemon['pokemon']['url']
-        };
-    });
+        }
+    ));
 }
 
 async function getHabitatPokemon(habitat) {
     const habitatResponse = await requestPokemon(HABITAT_ENDPOINT, habitat).catch(e => { console.log(e) });
     const habitatPokemon = habitatResponse.pokemon_species;
-    return habitatPokemon.map((pokemon) => {
-        return {
+    return habitatPokemon.map((pokemon) => (
+        {
             'name': pokemon['name'],
             'endpoint': pokemon['url'].replace('pokemon-species', 'pokemon')
-        };
-    })
+        }
+    ))
 }
 
 
 function filterPokemon(type_pokemon, habitat_pokemon) {
     // https://stackoverflow.com/questions/53603040/filter-array-of-objects-by-another-array-of-objects
-    // why doesn't this work?  --> final_pokemon = this.type_pokemon.filter(element => this.habitat_pokemon.includes(element));
+    // why doesn't this work?  --> final_pokemon = type_pokemon.filter(element => habitat_pokemon.includes(element));
     return type_pokemon.filter((pokemon) => habitat_pokemon.find(({ name }) => pokemon.name === name));
 }
 
