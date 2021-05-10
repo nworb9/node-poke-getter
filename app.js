@@ -29,9 +29,7 @@ async function getSprite(endpoint){
     // https://www.kindacode.com/article/using-axios-to-download-images-and-videos-in-node-js/
     try {
         const response = await axios.get(endpoint);
-        const spritePath = response.data.sprites.front_default;
-        console.log(spritePath);
-        return spritePath;
+        return response.data.sprites.front_default;
     } catch (err) {
         throw 'API call unsuccessful -- confirm valid endpoint and filters!'
     }
@@ -66,17 +64,35 @@ function filterPokemon(type_pokemon, habitat_pokemon) {
     return type_pokemon.filter((pokemon) => habitat_pokemon.find(({ name }) => pokemon.name === name));
 }
 
+async function formatPokemon(pokemon_list) {
+    // they recommended using normal for loop -> https://stackoverflow.com/questions/37576685/using-async-await-with-a-foreach-loop/37576787#37576787
+    const finalPokemon = [];
+    for (poke in pokemon_list) {
+        console.log(poke);
+        const spritePath = await getSprite(poke['endpoint']).catch(e => { console.log(e) })
+        console.log(spritePath)
+        finalPokemon.push({
+            'name': poke['name'],
+            'sprite': spritePath
+        });
+    }
+    return finalPokemon
+}
+
 async function getPokemon(type, habitat) {
     const typePokemon = await getTypePokemon(type);
     const habitatPokemon = await getHabitatPokemon(habitat);
     const pokemonList = filterPokemon(typePokemon, habitatPokemon);
-    const pokemon = pokemonList.reduce((pokemon) => {
-        console.log(pokemon);
-        return {
-            'name': pokemon['name'],
-            'sprite': getSprite(pokemon['endpoint']).catch(e => { console.log(e) })
-        };
-    })
+    // const pokemon = pokemonList.reduce((pokemon) => {
+    //     console.log(pokemon);
+    //     const spritePath = await getSprite(pokemon['endpoint']).catch(e => { console.log(e) })
+    //     return {
+    //         'name': pokemon['name'],
+    //         'sprite': spritePath
+    //     };
+    // })
+    const pokemon = await formatPokemon(pokemonList)
+    console.log(pokemon)
 }
 
 // add handling for when there isn't a type/habitat specified
