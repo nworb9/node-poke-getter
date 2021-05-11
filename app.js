@@ -89,15 +89,12 @@ async function getPokemon(type, habitat) {
     const typePokemon = await getTypePokemon(type);
     const habitatPokemon = await getHabitatPokemon(habitat);
     const pokemonList = filterPokemon(typePokemon, habitatPokemon);
-    // const pokemon = pokemonList.reduce((pokemon) => {   // this wasn't working with await!
-    //     console.log(pokemon);
-    //     const spritePath = await getSprite(pokemon['endpoint']).catch(e => { console.log(e) })
-    //     return {
-    //         'name': pokemon['name'],
-    //         'sprite': spritePath
-    //     };
-    // })
-    const pokemon = await formatPokemon(pokemonList)
+    const pokemon = await Promise.all(pokemonList.map(async (poke) => {
+        ({
+            'name': poke['name'],
+            'sprite': await getSprite(poke).catch(e => { console.log(e) })
+        });
+    }))
     console.log(pokemon)
 }
 
