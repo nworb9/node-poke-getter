@@ -12,7 +12,7 @@ if (!fs.existsSync(MEDIA_DIR)) {
   fs.mkdirSync(MEDIA_DIR);
 }
 
-async function requestPokemon(endpoint, filter) {
+const requestPokemon =  async (endpoint, filter) => {
   try {
     const url = endpoint + filter + "/";
     const response = await axios.get(url);
@@ -22,7 +22,7 @@ async function requestPokemon(endpoint, filter) {
   }
 }
 
-async function getSprite(pokemon) {
+const getSprite = async (pokemon) => {
   // https://www.kindacode.com/article/using-axios-to-download-images-and-videos-in-node-js/
   try {
     const spritePathLocal = MEDIA_DIR + "/" + pokemon["name"] + ".png";
@@ -45,7 +45,7 @@ async function getSprite(pokemon) {
   }
 }
 
-async function getTypePokemon(type) {
+const getTypePokemon = async (type) => {
   if (type) {
     const typeResponse = await requestPokemon(TYPE_ENDPOINT, type).catch(
       (e) => {
@@ -62,7 +62,7 @@ async function getTypePokemon(type) {
   }
 }
 
-async function getHabitatPokemon(habitat) {
+const getHabitatPokemon = async (habitat) => {
   if (habitat) {
     const habitatResponse = await requestPokemon(
       HABITAT_ENDPOINT,
@@ -80,7 +80,7 @@ async function getHabitatPokemon(habitat) {
   }
 }
 
-function filterPokemon(type_pokemon, habitat_pokemon) {
+const filterPokemon = (type_pokemon, habitat_pokemon) => {
     console.log(type_pokemon);
     console.log(habitat_pokemon);
     if (type_pokemon.length !== 0 && habitat_pokemon.length !== 0) {
@@ -98,7 +98,7 @@ function filterPokemon(type_pokemon, habitat_pokemon) {
   
 }
 
-async function getPokemon(type, habitat) {
+const getPokemon = async (type, habitat) => {
   const typePokemon = await getTypePokemon(type);
   const habitatPokemon = await getHabitatPokemon(habitat);
   const pokemonList = filterPokemon(typePokemon, habitatPokemon);
