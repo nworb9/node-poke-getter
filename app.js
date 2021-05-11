@@ -116,6 +116,4 @@ const getPokemon = async (type, habitat) => {
   return finalPokemon;
 }
 
-// TODO add handling for when there isn't a type/habitat specified
-
 const pokemon = getPokemon(TYPE, HABITAT).then(console.log);
